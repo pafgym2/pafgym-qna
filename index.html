@@ -292,7 +292,7 @@
 <script>
 /* 파프짐 Q&A 방문분석 — EP에 Apps Script 웹앱(/exec) URL 넣으면 켜짐. 비어있으면 아무 동작 안 함 */
 (function(){
-  var EP='';
+  var EP='https://script.google.com/macros/s/AKfycbx0aAViYYl476CjEChO28i-9RspSbGvU8FQc3cQoVNVQXrSAZTAVLh4Vcms45wf5uiGcQ/exec';
   if(!EP)return;
   function send(t,v){
     try{
@@ -307,7 +307,8 @@
   });
   document.querySelectorAll('.faq').forEach(function(f){
     var qe=f.querySelector('.q');
-    var q=qe?qe.textContent.replace('+','').trim():'';
+    var q='';
+    if(qe){var qc=qe.cloneNode(true);qc.querySelectorAll('.plus,.nb').forEach(function(x){x.remove();});q=qc.textContent.trim();}
     f.addEventListener('click',function(){
       setTimeout(function(){ if(f.classList.contains('open'))send('faq_open',q); },40);
     });
