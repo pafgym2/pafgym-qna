@@ -464,7 +464,8 @@
       else{fetch(EP,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:body,keepalive:true});}
     }catch(e){}
   }
-  send('pageview','');
+  var SRC=(function(){try{var v=new URLSearchParams(location.search).get('s');return v?v.slice(0,32):'direct';}catch(e){return 'direct';}})();
+  send('pageview',SRC);
   document.querySelectorAll('.tab').forEach(function(t){
     t.addEventListener('click',function(){send('tab',t.getAttribute('data-cat')||'');});
   });
@@ -487,5 +488,23 @@
       send(noHit?'search_noresult':'search',term);
     },900);
   });}
+})();
+</script>
+
+<script>
+/* PAFGYM Q&A link tracking: ?s=<code> -> own Supabase (insert-only, RLS blocks reads) */
+(function(){
+  try{
+    var API='https://dzmxwsxcwtugnyyfvnja.supabase.co/rest/v1/qna_views';
+    var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bXh3c3hjd3R1Z255eWZ2bmphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMzUxNjcsImV4cCI6MjA5NjgxMTE2N30.PkzQD7JJuFdtMGWzm2FC9HFzf1wVW1Wh9wg41SxJKzg';
+    var s=(new URLSearchParams(location.search).get('s')||'direct').slice(0,32);
+    var d=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop';
+    var k='qnav_'+s+'_'+new Date().toISOString().slice(0,13);
+    try{ if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1'); }catch(e){}
+    fetch(API,{method:'POST',keepalive:true,
+      headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({src:s,device:d,referrer:(document.referrer||'').slice(0,200)})
+    }).catch(function(){});
+  }catch(e){}
 })();
 </script>
