@@ -499,11 +499,20 @@
     var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6bXh3c3hjd3R1Z255eWZ2bmphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyMzUxNjcsImV4cCI6MjA5NjgxMTE2N30.PkzQD7JJuFdtMGWzm2FC9HFzf1wVW1Wh9wg41SxJKzg';
     var s=(new URLSearchParams(location.search).get('s')||'direct').slice(0,32);
     var d=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop';
+    /* anonymous visitor id: random, stored on this device only. no personal data. */
+    var vid=null;
+    try{
+      vid=localStorage.getItem('qna_vid');
+      if(!vid){
+        vid=(Date.now().toString(36)+Math.random().toString(36).slice(2,10)).slice(0,20);
+        localStorage.setItem('qna_vid',vid);
+      }
+    }catch(e){ vid=null; }
     var k='qnav_'+s+'_'+new Date().toISOString().slice(0,13);
     try{ if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1'); }catch(e){}
     fetch(API,{method:'POST',keepalive:true,
       headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({src:s,device:d,referrer:(document.referrer||'').slice(0,200)})
+      body:JSON.stringify({src:s,device:d,visitor:vid,referrer:(document.referrer||'').slice(0,200)})
     }).catch(function(){});
   }catch(e){}
 })();
